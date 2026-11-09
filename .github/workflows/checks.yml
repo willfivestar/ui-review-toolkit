@@ -1,0 +1,42 @@
+name: Checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: ui_review
+          POSTGRES_DB: ui_review_test
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432/tcp
+        options: >-
+          --health-cmd "pg_isready -U ui_review -d ui_review_test"
+          --health-interval 5s --health-timeout 3s --health-retries 12
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: "22"
+      - uses: astral-sh/setup-uv@94527f2e458b27549849d47d273a16bec83a01e9 # v7
+        with:
+          version: "0.9.26"
+          enable-cache: false
+      - run: |
+          npm --prefix clients/ui-review ci --ignore-scripts
+          npm --prefix clients/ui-review run check:types
+          npm --prefix clients/ui-review run build:next
+          npm --prefix clients/ui-review test
+      - name: API contracts
+        env:
+          UI_REVIEW_DATABASE_URL: postgresql+psycopg://ui_review@127.0.0.1:${{ job.services.postgres.ports[5432] }}/ui_review_test
+        run: |
+          export UI_REVIEW_GRANT_SIGNING_KEY="$(python3 -c 'import secrets; print(secrets.token_hex(32))')"
+          uv run --locked --python 3.12 pytest -q
+      - run: docker build .

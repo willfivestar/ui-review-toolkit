@@ -1,0 +1,16 @@
+{
+  "name": "ui-review-client",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:next": "node scripts/build-next.mjs",
+    "check:next": "node scripts/build-next.mjs --check",
+    "check:types": "tsc --noEmit",
+    "test": "node --test test/*.test.mjs",
+    "test:browser": "node test/browser-smoke.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.65.0",
+    "typescript": "^5.9.2"
+  }
+}

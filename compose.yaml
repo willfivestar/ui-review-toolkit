@@ -1,0 +1,46 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: ui_review
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Run python3 scripts/init-config.py first}
+      UI_REVIEW_DB_PASSWORD: ${UI_REVIEW_DB_PASSWORD:?Run python3 scripts/init-config.py first}
+    healthcheck:
+      test: ["CMD", "pg_isready", "-h", "127.0.0.1", "-U", "ui_review", "-d", "ui_review"]
+      interval: 3s
+      timeout: 3s
+      retries: 15
+      start_period: 15s
+    volumes:
+      - db:/var/lib/postgresql/data
+      - ./docker/init-db.sh:/docker-entrypoint-initdb.d/10-ui-review.sh:ro
+    mem_limit: 512m
+    memswap_limit: 512m
+    logging: &logging
+      options: {max-size: "10m", max-file: "3"}
+  api:
+    build: .
+    depends_on:
+      db: {condition: service_healthy}
+    environment:
+      UI_REVIEW_DATABASE_URL: postgresql+psycopg://ui_review:${UI_REVIEW_DB_PASSWORD}@db/ui_review
+      UI_REVIEW_GRANT_SIGNING_KEY: ${UI_REVIEW_GRANT_SIGNING_KEY:?Run python3 scripts/init-config.py first}
+      UI_REVIEW_PUBLIC_BASE_URL_REVIEW: ${UI_REVIEW_PUBLIC_BASE_URL_REVIEW:-http://127.0.0.1:8781}
+    ports:
+      - "127.0.0.1:${UI_REVIEW_PORT:-8781}:8781"
+    healthcheck:
+      test: ["CMD", "python", "-c", "from urllib.request import urlopen; urlopen('http://127.0.0.1:8781/health', timeout=2)"]
+      interval: 3s
+      timeout: 3s
+      retries: 15
+      start_period: 15s
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    read_only: true
+    tmpfs: [/tmp]
+    mem_limit: 384m
+    memswap_limit: 384m
+    logging: *logging
+volumes:
+  db:

@@ -1,0 +1,14 @@
+**
+!pyproject.toml
+!uv.lock
+!app
+!app/**/*.py
+!clients
+!clients/ui-review
+!clients/ui-review/package.json
+!clients/ui-review/package-lock.json
+!clients/ui-review/scripts
+!clients/ui-review/scripts/build-next.mjs
+!clients/ui-review/src
+!clients/ui-review/src/next
+!clients/ui-review/src/next/*.ts
