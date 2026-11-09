@@ -4,6 +4,12 @@ Give someone a preview link and let them leave feedback **on the page itself**. 
 
 UI Review Toolkit includes the browser overlay, a self-hosted FastAPI/PostgreSQL service, a CLI, and an [agent skill](skill/ui-review/SKILL.md). It works with websites you control and can add a script to.
 
+## See it in action
+
+![A reviewer selects the North Loop trail card, adds a note about estimated hike time, and reopens the note from its numbered pin.](docs/review-demo.gif)
+
+Open the toolbar, select an element, save a note, then click its numbered pin to reopen it.
+
 ## Try it locally
 
 You'll need Docker with Compose and Python 3. Run these commands from the repository root:
