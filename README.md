@@ -10,6 +10,22 @@ UI Review Toolkit includes the browser overlay, a self-hosted FastAPI/PostgreSQL
 
 Open the toolbar, select an element, save a note, then click its numbered pin to reopen it.
 
+## Copy this prompt into your AI coding agent
+
+```text
+Help me set up UI Review Toolkit.
+https://github.com/willfivestar/ui-review-toolkit
+
+Read the README and skill/ui-review/SKILL.md. If I give you a preview I
+control, help me add the review overlay there. Otherwise, run the local
+demo.
+
+Follow the documented setup and verify that a test note saves. Show me
+how to open the review privately and read the saved feedback. Keep owner
+tokens and reviewer links private, and ask before deploying anything or
+making a service public.
+```
+
 ## Try it locally
 
 You'll need Docker with Compose and Python 3. Run these commands from the repository root:
